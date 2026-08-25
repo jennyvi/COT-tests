@@ -2,12 +2,54 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>My Playground</title>
-        <link rel="stylesheet" href="styles.css" />
+        <title>Volunteer Directory Preview - Cherry On Tech</title>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                background-color: #f7f7f8;
+                margin: 0;
+                padding: 40px 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .preview-container {
+                width: 100%;
+                max-width: 1200px;
+                background: #ffffff;
+                padding: 24px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                margin-bottom: 30px;
+            }
+            h2 {
+                font-size: 1.1rem;
+                color: #333333;
+                margin-top: 0;
+                margin-bottom: 16px;
+                font-weight: 600;
+            }
+            /* Makes both iframes match width smoothly */
+            iframe {
+                width: 100% !important;
+                border: 1px solid #e1e4e8 !important;
+                border-radius: 8px;
+            }
+        </style>
     </head>
     <body>
-        <iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://embed.figma.com/design/J56EPcWiwcSyTrxDf4EHG4/Design-System---Handoff-%7C-COT-Website-V2.5?node-id=2091-63086&embed-host=share" allowfullscreen></iframe>
-        <iframe class="airtable-embed" src="https://airtable.com/embed/appQGB7QVsOOx0rX1/shrdr5rUPSbRwHacA" frameborder="0" onmousewheel="" width="100%" height="533" style="background: transparent; border: 1px solid #ccc;"></iframe>
-        <script src="script.js"></script>
+
+        <!-- Figma Wireframe Section -->
+        <div class="preview-container">
+            <h2>1. Figma Page Layout & Wireframe</h2>
+            <iframe height="600" src="https://embed.figma.com/design/J56EPcWiwcSyTrxDf4EHG4/Design-System---Handoff-%7C-COT-Website-V2.5?node-id=2091-63086&embed-host=share" allowfullscreen></iframe>
+        </div>
+
+        <!-- Airtable Live Embed Section -->
+        <div class="preview-container">
+            <h2>2. Live Airtable Component View</h2>
+            <iframe height="533" src="https://airtable.com/embed/appQGB7QVsOOx0rX1/shrdr5rUPSbRwHacA" frameborder="0" onmousewheel=""></iframe>
+        </div>
+
     </body>
 </html>
