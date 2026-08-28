@@ -23,12 +23,13 @@
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
                 margin-top: 40px;
             }
-            /* Figma Frame: Borderless and full width */
-            .figma-embed {
-                width: 100% !important;
+            /* Static Image Styling (replaces the Figma iframe) */
+            .preview-image {
+                width: 100%;
                 max-width: 1200px;
-                border: none !important;
-                background: transparent;
+                height: auto;
+                display: block;
+                border-radius: 8px;
             }
             /* Airtable Frame */
             .airtable-embed {
@@ -40,8 +41,8 @@
     </head>
     <body>
 
-        <!-- Figma Wireframe Section (Borderless) -->
-        <iframe class="figma-embed" height="2800" src="https://embed.figma.com/design/J56EPcWiwcSyTrxDf4EHG4/Design-System---Handoff-%7C-COT-Website-V2.5?node-id=2091-63086&embed-host=share"></iframe>
+        <!-- Static Image Section (Replace file name if using .jpg) -->
+        <img src="COT About.png" alt="COT About Preview" class="preview-image" />
 
         <!-- Airtable Live Embed Section -->
         <div class="airtable-container">
