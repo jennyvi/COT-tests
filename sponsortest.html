@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sponsors Section Test</title>
+  <style>
+    /* Section Container */
+    .sponsors-section {
+      background-color: #f4f4f4; /* Light grey background matching mockup */
+      padding: 60px 20px;
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .sponsors-section h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 40px;
+    }
+
+    /* Flex Container with 1464px Restriction */
+    .sponsors-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 32px 48px; /* Spacing between logos */
+      max-width: 1464px;
+      margin: 0 auto;
+    }
+
+    /* Sponsor Link Container - Safe place to constrain wide logos */
+    .sponsor-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease;
+      max-width: 140px; /* Prevents wide wordmarks like Google from stretching wide */
+    }
+
+    .sponsor-item:hover {
+      opacity: 0.8;
+    }
+
+    /* SVG Image Styling - Restores explicit height so SVGs never collapse to 0px */
+    .sponsor-item img {
+      height: 32px;
+      max-height: 32px;
+      width: auto;
+      max-width: 100%;
+      
+      object-fit: contain; 
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="sponsors-section">
+    <h2>With Gratitude to Our Cherry Supporters</h2>
+    <div id="sponsors-grid" class="sponsors-grid">
+      <!-- Dynamic logos will load here via JS -->
+    </div>
+  </section>
+
+  <script>
+    // Airtable Configuration
+    const AIRTABLE_PAT = 'patYV7uEUS9Z25S6U.cebcd5a7f7fb9c878e8454cd197bfe58cb96f2a89a6dc9829c15a88e51886c16'; 
+    const BASE_ID = 'appliT1j2XUIySJRZ';            
+    const TABLE_NAME = 'tblCsSh4mrZvx1jtS';
+
+    async function fetchSponsors() {
+      try {
+        const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`, {
+          headers: { Authorization: `Bearer ${AIRTABLE_PAT}` }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch Airtable data');
+
+        const data = await response.json();
+        
+        // 1. Filter ONLY "Yes" records
+        const activeSponsors = data.records.filter(record => 
+          record.fields['Active Status'] === 'Yes' && 
+          record.fields['Logo'] && 
+          record.fields['Logo'].length > 0
+        );
+
+        // 2. Sort by Display Order numerically
+        activeSponsors.sort((a, b) => {
+          const orderA = a.fields['Display Order'] || 999;
+          const orderB = b.fields['Display Order'] || 999;
+          return orderA - orderB;
+        });
+
+        // 3. Render items into the Grid
+        const gridContainer = document.getElementById('sponsors-grid');
+        gridContainer.innerHTML = ''; 
+
+        activeSponsors.forEach(sponsor => {
+          const name = sponsor.fields['Sponsor'] || 'Sponsor';
+          const logoUrl = sponsor.fields['Logo'][0].url;
+          const linkUrl = sponsor.fields['Website Link'] || '#';
+
+          const sponsorElement = document.createElement('a');
+          sponsorElement.href = linkUrl;
+          sponsorElement.target = '_blank';
+          sponsorElement.rel = 'noopener noreferrer';
+          sponsorElement.className = 'sponsor-item';
+          sponsorElement.setAttribute('aria-label', name);
+
+          sponsorElement.innerHTML = `<img src="${logoUrl}" alt="${name} logo" />`;
+          gridContainer.appendChild(sponsorElement);
+        });
+
+      } catch (error) {
+        console.error('Error loading sponsor logos:', error);
+      }
+    }
+
+    fetchSponsors();
+  </script>
+</body>
+</html>
