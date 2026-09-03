@@ -12,32 +12,53 @@
       color: #1a1a1a;
     }
 
+    /* Container to place program cards side-by-side */
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    .program-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .program-column h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
     .card {
-      max-width: 500px;
+      width: 500px;
+      max-width: 100%;
       background: #ffffff;
       border: 2px solid #1a1a1a;
       border-radius: 12px;
       padding: 32px;
       box-shadow: 4px 4px 0px #1a1a1a;
+      box-sizing: border-box;
     }
 
-    h2 {
+    .card h2 {
       margin-top: 0;
       font-size: 24px;
     }
 
-    p {
+    .card p {
       line-height: 1.5;
       color: #4a4a4a;
     }
 
-    ul {
+    .card ul {
       list-style-type: disc;
       padding-left: 20px;
       margin: 20px 0;
     }
 
-    li {
+    .card li {
       margin-bottom: 8px;
     }
 
@@ -63,28 +84,46 @@
 </head>
 <body>
 
-  <h1>Cherry Launchpad</h1>
-
-  <!-- CARD POPULATED DYNAMICALLY BY AIRTABLE -->
-  <div class="card">
-    <h2 id="status-title">Loading status...</h2>
-    <p id="status-subtext">Fetching the latest cohort information...</p>
+  <div class="cards-container">
     
-    <ul id="status-bullets">
-      <!-- Bullets populate here -->
-    </ul>
+    <!-- CARD 1: CHERRY LAUNCHPAD -->
+    <div class="program-column">
+      <h1>Cherry Launchpad</h1>
+      <div class="card">
+        <h2 id="launchpad-status-title">Loading status...</h2>
+        <p id="launchpad-status-subtext">Fetching latest cohort information...</p>
+        
+        <ul id="launchpad-status-bullets">
+          <!-- Bullets populate here -->
+        </ul>
 
-    <a href="#" id="status-button" class="btn" target="_blank">Loading...</a>
+        <a href="#" id="launchpad-status-button" class="btn" target="_blank">Loading...</a>
+      </div>
+    </div>
+
+    <!-- CARD 2: CHERRY CAREERS -->
+    <div class="program-column">
+      <h1>Cherry Careers</h1>
+      <div class="card">
+        <h2 id="careers-status-title">Loading status...</h2>
+        <p id="careers-status-subtext">Fetching latest cohort information...</p>
+        
+        <ul id="careers-status-bullets">
+          <!-- Bullets populate here -->
+        </ul>
+
+        <a href="#" id="careers-status-button" class="btn" target="_blank">Loading...</a>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // --- YOUR PRE-FILLED AIRTABLE CONFIGURATION ---
     const AIRTABLE_ACCESS_TOKEN = 'patpXFd996hxXbdlM.3e61d168b1cd148466f54141f653b2de7cf8643789de4bdc959a0ef6797a860b'; 
     const BASE_ID = 'app1SYNT1kYtx4c30';               
     const TABLE_NAME = 'tblCsSh4mrZvx1jtS';           
 
     async function fetchCohortStatus() {
-      // Build the Airtable API URL using Base ID and Table ID
       const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`;
 
       try {
@@ -96,53 +135,67 @@
 
         const data = await response.json();
         
-        // Grab fields from the first record in the table
-        const fields = data.records[0].fields;
+        // 1. POPULATE CHERRY LAUNCHPAD (Record 0)
+        if (data.records[0]) {
+          const launchpadFields = data.records[0].fields;
+          renderCard('launchpad', launchpadFields, 'Fall 2027', 'Fall Cohort (August – December)', 'Join Cherry Launchpad →');
+        }
 
-        // Select the HTML DOM elements
-        const titleEl = document.getElementById('status-title');
-        const subtextEl = document.getElementById('status-subtext');
-        const bulletsEl = document.getElementById('status-bullets');
-        const buttonEl = document.getElementById('status-button');
-
-        // --- TOGGLE LOGIC ---
-        if (fields.Status === 'Open') {
-          
-          // OPEN STATE
-          titleEl.textContent = `${fields['Cohort Name'] || 'Fall 2027'} Cohort Applications Open`;
-          subtextEl.textContent = 'Take the first step towards an exciting career in tech. Applications are live for a limited time!';
-          
-          bulletsEl.innerHTML = `
-            <li><strong>Application Window:</strong> ${fields['Formatted App Window'] || 'Dates TBD'}</li>
-            <li><strong>Cohort Dates:</strong> ${fields['Formatted Cohort Dates'] || 'Dates TBD'}</li>
-          `;
-
-          buttonEl.textContent = 'Join Cherry Launchpad →';
-          buttonEl.href = fields['Application Form Link'] || '#';
-
+        // 2. POPULATE CHERRY CAREERS (Record 1 or fallback to default closed layout)
+        if (data.records[1]) {
+          const careersFields = data.records[1].fields;
+          renderCard('careers', careersFields, 'Spring 2027', 'Spring Cohort (January – February)', 'Join Cherry Careers →');
         } else {
-          
-          // CLOSED STATE (DEFAULT)
-          titleEl.textContent = 'Applications Currently Closed';
-          subtextEl.textContent = 'Our cohorts typically run once a year in the Fall. Sign up for the Cherry On Tech newsletter to get notified as soon as new cohort dates and application windows are announced!';
-          
-          bulletsEl.innerHTML = `
-            <li><strong>Typical Schedule:</strong> Fall Cohort (August – December)</li>
-            <li><strong>Next Window:</strong> Announced via our newsletter</li>
-          `;
-
-          buttonEl.textContent = 'Subscribe for Updates →';
-          buttonEl.href = 'https://www.linkedin.com/newsletters/cherryontech-newsletter-7164685602104225792';
+          // Default fallback rendering for Cherry Careers matching your mockup text
+          renderDefaultCareersClosed();
         }
 
       } catch (error) {
         console.error('Error fetching data from Airtable:', error);
-        document.getElementById('status-title').textContent = 'Error loading status';
-        document.getElementById('status-subtext').textContent = 'Please check your console or Airtable table column names.';
+        document.getElementById('launchpad-status-title').textContent = 'Error loading status';
+        document.getElementById('careers-status-title').textContent = 'Error loading status';
       }
     }
 
-    // Run when page loads
+    function renderCard(prefix, fields, defaultCohort, typicalSchedule, buttonLabel) {
+      const titleEl = document.getElementById(`${prefix}-status-title`);
+      const subtextEl = document.getElementById(`${prefix}-status-subtext`);
+      const bulletsEl = document.getElementById(`${prefix}-status-bullets`);
+      const buttonEl = document.getElementById(`${prefix}-status-button`);
+
+      if (fields.Status === 'Open') {
+        titleEl.textContent = `${fields['Cohort Name'] || defaultCohort} Cohort Applications Open`;
+        subtextEl.textContent = 'Take the next step towards an exciting career in tech. Applications are live for a limited time!';
+        bulletsEl.innerHTML = `
+          <li><strong>Application Window:</strong> ${fields['Formatted App Window'] || 'Dates TBD'}</li>
+          <li><strong>Cohort Dates:</strong> ${fields['Formatted Cohort Dates'] || 'Dates TBD'}</li>
+        `;
+        buttonEl.textContent = buttonLabel;
+        buttonEl.href = fields['Application Form Link'] || '#';
+      } else {
+        titleEl.textContent = 'Applications Currently Closed';
+        subtextEl.textContent = 'Our cohorts typically run once a year. Sign up for the Cherry On Tech newsletter to get notified as soon as new cohort dates and application windows are announced!';
+        bulletsEl.innerHTML = `
+          <li><strong>Typical Schedule:</strong> ${typicalSchedule}</li>
+          <li><strong>Next Window:</strong> Announced via our newsletter</li>
+        `;
+        buttonEl.textContent = 'Subscribe for Updates →';
+        buttonEl.href = 'https://www.linkedin.com/newsletters/cherryontech-newsletter-7164685602104225792';
+      }
+    }
+
+    function renderDefaultCareersClosed() {
+      document.getElementById('careers-status-title').textContent = 'Applications Currently Closed';
+      document.getElementById('careers-status-subtext').textContent = 'Our cohorts typically run once a year in the Spring. Sign up for the Cherry On Tech newsletter to get notified as soon as new cohort dates and application windows are announced!';
+      document.getElementById('careers-status-bullets').innerHTML = `
+        <li><strong>Typical Schedule:</strong> Spring Cohort (January – February)</li>
+        <li><strong>Next Window:</strong> Announced via our newsletter</li>
+      `;
+      const btn = document.getElementById('careers-status-button');
+      btn.textContent = 'Subscribe for Updates →';
+      btn.href = 'https://www.linkedin.com/newsletters/cherryontech-newsletter-7164685602104225792';
+    }
+
     fetchCohortStatus();
   </script>
 </body>
