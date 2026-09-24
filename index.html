@@ -254,13 +254,13 @@
         // 1. POPULATE CHERRY LAUNCHPAD (Record 0)
         if (data.records[0]) {
           const launchpadFields = data.records[0].fields;
-          renderCard('launchpad', launchpadFields, 'Fall 2027', 'Fall Cohort (August – December)', 'Join Cherry Launchpad →');
+          renderCard('launchpad', launchpadFields, 'Fall 2027', 'August – December', 'Join Cherry Launchpad →');
         }
 
         // 2. POPULATE CHERRY CAREERS (Record 1 or fallback to default closed layout)
         if (data.records[1]) {
           const careersFields = data.records[1].fields;
-          renderCard('careers', careersFields, 'Spring 2027', 'Spring Cohort (January – February)', 'Join Cherry Careers →');
+          renderCard('careers', careersFields, 'Spring 2027', 'January – February', 'Join Cherry Careers →');
         } else {
           renderDefaultCareersClosed();
         }
@@ -282,7 +282,7 @@
         titleEl.textContent = `${fields['Cohort Name'] || defaultCohort} Cohort Applications Open`;
         subtextEl.textContent = 'Take the next step towards an exciting career in tech. Applications are live for a limited time!';
         bulletsEl.innerHTML = `
-          <li><strong>Application Window:</strong> ${fields['Formatted App Window'] || 'Dates TBD'}</li>
+          <li><strong>Application:</strong> ${fields['Formatted App Window'] || 'Dates TBD'}</li>
           <li><strong>Cohort Dates:</strong> ${fields['Formatted Cohort Dates'] || 'Dates TBD'}</li>
         `;
         buttonEl.textContent = buttonLabel;
